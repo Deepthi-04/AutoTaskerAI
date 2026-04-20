@@ -1,30 +1,20 @@
 # tools.py
 
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+import ollama
 from prompts import SUMMARY_PROMPT, INSIGHTS_PROMPT, QUIZ_PROMPT
 
-load_dotenv()
-
-api_key = os.getenv("OPENAI_API_KEY")
-
-if not api_key:
-    raise ValueError("OPENAI_API_KEY not found in .env file")
-
-client = OpenAI(api_key=api_key)
+MODEL_NAME = "gemma3"
 
 
 def get_llm_response(prompt: str) -> str:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
+    response = ollama.chat(
+        model=MODEL_NAME,
         messages=[
             {"role": "system", "content": "You are a helpful AI assistant."},
             {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
+        ]
     )
-    return response.choices[0].message.content
+    return response["message"]["content"]
 
 
 def summarize_text(text: str) -> str:
